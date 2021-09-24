@@ -1,0 +1,16 @@
+{
+  "name": "swc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "rustedeels <rustedeels@protonmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn dir && yarn clean && yarn dir && yarn public && tsc --watch",
+    "clean": "pwsh -c rm dist -Recurse -Force -Confirm:$false",
+    "public": "pwsh -c cp ./public/* ./dist -Recurse -Force -Confirm:$false",
+    "dir": "pwsh -c mkdir dist -Force"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
+}

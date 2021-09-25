@@ -1,1 +1,1 @@
-export * from './dependency-container/index.js'
+export * from './dependency-container/index.js';

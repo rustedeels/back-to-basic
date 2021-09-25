@@ -16,7 +16,7 @@ class App1 {
   private logger!: Logger;
 
   public run() {
-    this.logger.log("Hello World from 1!");
+    this.logger.log('Hello World from 1!');
   }
 }
 
@@ -25,7 +25,7 @@ class App2 {
   private logger!: Logger;
 
   public run() {
-    this.logger.log("Hello World from 2!");
+    this.logger.log('Hello World from 2!');
   }
 }
 

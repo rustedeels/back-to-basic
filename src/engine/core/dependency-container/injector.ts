@@ -1,5 +1,7 @@
 import '/libs/Reflect.js';
 
+import { ObjectOf } from '/engine/helpers/models.js';
+
 import { isConstructor } from './guards.js';
 import { appContainer as container } from './instance.js';
 import {
@@ -8,7 +10,7 @@ import {
 } from './models.js';
 
 export function Inject<T>(token?: Token<T>) {
-  return function(target: any, propKey: string) {
+  return function(target: ObjectOf<unknown>, propKey: string | symbol): void {
     const instanceKey = Symbol(propKey.toString());
 
     Object.defineProperty(target, instanceKey, {
@@ -18,7 +20,7 @@ export function Inject<T>(token?: Token<T>) {
 
     Object.defineProperty(target, propKey, {
       get() {
-        const type = Reflect.getMetadata("design:type", target, propKey) as Type<T> | undefined;
+        const type = Reflect.getMetadata('design:type', target, propKey) as Type<T> | undefined;
         const key = token ?? type;
 
         if (typeof key !== 'symbol' && !isConstructor<T>(key)) {

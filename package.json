@@ -8,9 +8,16 @@
     "start": "yarn dir && yarn clean && yarn dir && yarn public && tsc --watch",
     "clean": "pwsh -c rm dist -Recurse -Force -Confirm:$false",
     "public": "pwsh -c cp ./public/* ./dist -Recurse -Force -Confirm:$false",
-    "dir": "pwsh -c mkdir dist -Force"
+    "dir": "pwsh -c mkdir dist -Force",
+    "lint": "eslint src/**/*.ts"
   },
-  "dependencies": {
-    "reflect-metadata": "^0.1.13"
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
+    "eslint": "~7.32.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.24.2",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "~4.4.3"
   }
 }

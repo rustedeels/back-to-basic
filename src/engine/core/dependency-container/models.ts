@@ -1,5 +1,5 @@
 /** Constructor type */
-export type Type<T> = { new (...args: any[]): T };
+export type Type<T> = { new (...args: unknown[]): T };
 
 /** Token to be instantiated */
 export type Token<T> = Type<T> | symbol;

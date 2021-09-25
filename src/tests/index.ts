@@ -141,10 +141,6 @@ export function it(name: string, runTest: () => void | Promise<void>) {
   suite.units.push(testUnit);
 }
 
-function renderLoader() {
-  document.body.classList.add('test-loading');
-}
-
 function callRender(render: () => void): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -245,7 +241,6 @@ export async function runUnitTests(suiteId: string, unit: TestUnit) {
 }
 
 export async function runTests() {
-  await callRender(renderLoader);
   const results: SuiteResult[] = [];
   const toTest: TestSuite[] = [];
 

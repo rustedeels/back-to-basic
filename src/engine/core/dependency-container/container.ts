@@ -76,7 +76,7 @@ export class Container {
   }
 
   /** Return token instance value */
-  public get<T>(token: Token<T>): T {
+  public resolve<T>(token: Token<T>): T {
     const resolver = this._deps.get(token) as Resolver<T> | undefined;
     if (!resolver) throw new Error('Cannot resolve token: ' + JSON.stringify(token));
 
@@ -91,6 +91,11 @@ export class Container {
       this._deps.set(token, resolver);
     }
     return instance as T;
+  }
+
+  /** Return token lifecycle, or undefined if not found */
+  public has(token: Token<unknown>): TokenLife | undefined {
+    return this._deps.get(token)?.life;
   }
 
   private registerResolver<T>(resolver: Resolver<T>): void {

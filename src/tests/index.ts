@@ -168,6 +168,11 @@ function renderToTest(toTest: TestSuite[]) {
     const header = document.createElement('div');
     header.classList.add('test-suite-header');
     header.innerText = s.name;
+    header.addEventListener('click', () => {
+      const el = document.getElementById(s.id);
+      if (!el) return;
+      el.classList.toggle('test-suite-closed');
+    });
     root.appendChild(header);
 
     const body = document.createElement('div');
@@ -215,8 +220,23 @@ function renderSuiteResult(result: SuiteResult) {
 function renderTotalResult(result: TestTotalResult) {
   const totalResult = document.createElement('div');
   totalResult.classList.add('test-total-result');
-  totalResult.innerText = `${result.passed}/${result.total}`;
-  document.body.appendChild(totalResult);
+
+  const total = document.createElement('div');
+  total.classList.add('test-total-result-total');
+  total.innerText = `Total: ${result.total}`;
+  totalResult.appendChild(total);
+
+  const passed = document.createElement('div');
+  passed.classList.add('test-total-result-passed');
+  passed.innerText = `Passed: ${result.passed}`;
+  totalResult.appendChild(passed);
+
+  const failed = document.createElement('div');
+  failed.classList.add('test-total-result-failed');
+  failed.innerText = `Failed: ${result.failed}`;
+  totalResult.appendChild(failed);
+
+  document.body.prepend(totalResult);
 }
 
 export async function runUnitTests(suiteId: string, unit: TestUnit) {
@@ -233,6 +253,7 @@ export async function runUnitTests(suiteId: string, unit: TestUnit) {
     result.passed = true;
   }
   catch (e) {
+    console.error(e);
     result.message = String(e);
   }
 

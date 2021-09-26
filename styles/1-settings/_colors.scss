@@ -1,0 +1,15 @@
+:root {
+  --color-background: #011627;
+  --color-text: rgb(216, 216, 216);
+
+  --color-primary: #065977;
+  --color-accent: #08AFE4;
+  --color-active: #FEB113;
+}
+
+$color-background: var(--color-background);
+$color-text: var(--color-text);
+
+$color-primary: var(--color-primary);
+$color-accent: var(--color-accent);
+$color-active: var(--color-active);

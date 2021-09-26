@@ -9,8 +9,8 @@ import {
   isValue,
 } from './guards.js';
 
-describe('Test guards', () => {
-  it('isObject', () => {
+describe('Helper Guards', () => {
+  it('isObject should validate value is object', () => {
     Assert.isTrue(isObject({}));
     Assert.isFalse(isObject(null));
     Assert.isFalse(isObject(undefined));
@@ -19,7 +19,7 @@ describe('Test guards', () => {
     Assert.isTrue(isObject([]));
   });
 
-  it('isValue', () => {
+  it('isValue should validate value is not null or indefined', () => {
     Assert.isFalse(isValue(null));
     Assert.isFalse(isValue(undefined));
     Assert.isTrue(isValue(1));

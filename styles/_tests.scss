@@ -1,5 +1,42 @@
 .test {
+
   &-suite {
     font-size: 2rem;
+    padding: 0.3125rem;
+    padding-left: 1rem;
+
+    &-header {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    &-closed {
+      .test-unit {
+        display: none;
+      }
+    }
+  }
+
+  &-unit {
+    --c-waiting: cyan;
+    --c-success: green;
+    --c-failure: red;
+
+    padding-left: 1rem;
+    font-size: 1.3rem;
+    color: var(--c-waiting);
+
+    &.test-unit-passed {
+      color: var(--c-success);
+    }
+
+    &.test-unit-failed {
+      color: var(--c-failure);
+    }
+  }
+
+  &-total-result {
+    font-size: 3rem;
+    padding: 2rem;
   }
 }

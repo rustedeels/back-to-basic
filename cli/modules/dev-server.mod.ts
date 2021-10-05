@@ -24,7 +24,6 @@ async function watchStaticFiles(server: Server, info: ProjectInfo, log: boolean)
     run(async () => {
       Console.info(`Change detected in public files: ${e.paths}`);
       await copyStaticFiles(log);
-      Console.info('Reloading...');
       server.reload();
     });
   }
@@ -39,13 +38,8 @@ async function watchSourceFiles(server: Server, info: ProjectInfo, log: boolean)
       Console.info(`Change detected in source files: ${e.paths}`);
       await copySrcToCache(log);
       const res = await transpileTypescript();
-      if (!res.success) {
-        throw new Error('Error transpiling typescript');
-      }
-
+      if (!res.success) { Console.error('Error compiling typescript'); }
       await importTests(info.dist, `${info.dist}/run-tests.js`);
-
-      Console.info('Reloading...');
       server.reload();
     });
   }
@@ -59,9 +53,7 @@ async function watchSASS(server: Server, info: ProjectInfo) {
     run(async () => {
       Console.info(`Change detected in style files: ${e.paths}`);
       const res = await compileSCSS(false);
-      if (!res.success) {
-        throw new Error('Error compiling sass');
-      }
+      if (!res.success) { Console.error('Error compiling sass'); }
       server.styles();
     });
   }

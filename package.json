@@ -5,12 +5,9 @@
   "author": "rustedeels <rustedeels@protonmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "yarn dir && yarn clean && yarn dir && yarn public && tsc --watch",
-    "styles": "node-sass -o ./dist -w ./styles/styles.scss",
-    "clean": "pwsh -c rm dist -Recurse -Force -Confirm:$false",
-    "public": "pwsh -c cp ./public/* ./dist -Recurse -Force -Confirm:$false",
-    "dir": "pwsh -c mkdir dist -Force",
-    "lint": "eslint src/**/*.ts"
+    "start": "yarn cli start",
+    "lint": "eslint src/**/*.ts",
+    "cli": "deno run -A --unstable ./cli/cli.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "~4.31.2",

@@ -1,0 +1,12 @@
+{
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.unstable": true,
+    "eslint.lintTask.enable": false,
+    "eslint.quiet": true,
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "deno.suggest.imports.hosts": {
+        "https://deno.land": true
+    }
+}

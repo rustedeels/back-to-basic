@@ -15,6 +15,6 @@ export interface ObserverError {
 }
 
 export interface Observable<T> {
-  subscribe(fn: (data: T) => void): Subscription;
-  catchError(fn: (error: ObserverError) => void): Observable<T>;
+  subscribe(fn: (data?: T) => unknown): Subscription;
+  catchError(fn: (error: ObserverError) => unknown): Observable<T>;
 }

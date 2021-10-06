@@ -141,6 +141,9 @@ export function it(name: string, runTest: () => void | Promise<void>) {
   suite.units.push(testUnit);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+it.skip = function (..._: unknown[]): void { /** */ };
+
 function callRender(render: () => void): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -248,6 +251,7 @@ export async function runUnitTests(suiteId: string, unit: TestUnit) {
     passed: false
   };
 
+  console.groupCollapsed(unit.name);
   try {
     await unit.runTest();
     result.passed = true;
@@ -256,6 +260,7 @@ export async function runUnitTests(suiteId: string, unit: TestUnit) {
     console.error(e);
     result.message = String(e);
   }
+  console.groupEnd();
 
   await callRender(() => renderUnitResult(result));
   return result;
@@ -278,6 +283,7 @@ export async function runTests() {
   await callRender(() => renderToTest(toTest));
 
   for (const s of toTest) {
+    console.groupCollapsed(s.name);
     const result: SuiteResult = {
       id: s.id,
       name: s.name,
@@ -299,6 +305,7 @@ export async function runTests() {
 
     await callRender(() => renderSuiteResult(result));
     results.push(result);
+    console.groupEnd();
   }
 
   const totalResult: TestTotalResult = {

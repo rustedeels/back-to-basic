@@ -6,10 +6,12 @@ import { isConstructor } from './guards.js';
 import { appContainer as container } from './instance.js';
 import {
   Token,
+  TokenLife,
   Type,
 } from './models.js';
 
-export function Inject<T>(token?: Token<T>) {
+/** Decorator to inject instances at runtime */
+export function Inject<T>(token?: Token<T>): PropertyDecorator {
   return function(target: ObjectOf<unknown>, propKey: string | symbol): void {
     const instanceKey = Symbol(propKey.toString());
 
@@ -40,5 +42,14 @@ export function Inject<T>(token?: Token<T>) {
         throw new Error(`Cannot set ${propKey.toString()}, it's an injectable value`);
       }
     });
+  };
+}
+
+/** Register class in app container */
+export function Injectable(life: Exclude<TokenLife, 'value'> = 'singleton'): ClassDecorator {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  return (fn: Function) => {
+    if (!isConstructor(fn)) return;
+    container.register(fn, life);
   };
 }

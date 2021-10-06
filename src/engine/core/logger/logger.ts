@@ -1,3 +1,4 @@
+import { Injectable } from '../dependency-container/index.js';
 import { InternalLoggerEngine } from './engine.js';
 import { isLogOptionExtra } from './guards.js';
 import {
@@ -7,6 +8,7 @@ import {
   LogOptionExtra,
 } from './models.js';
 
+@Injectable()
 export class LoggerService {
   private readonly _engines: LoggerEngine[] = [InternalLoggerEngine];
   public logLevel: number = LogLevel.all;

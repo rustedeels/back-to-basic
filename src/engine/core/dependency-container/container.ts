@@ -78,7 +78,13 @@ export class Container {
   /** Return token instance value */
   public resolve<T>(token: Token<T>): T {
     const resolver = this._deps.get(token) as Resolver<T> | undefined;
-    if (!resolver) throw new Error('Cannot resolve token: ' + JSON.stringify(token));
+    if (!resolver) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const name = (token as any).name ?? token?.toString() ?? JSON.stringify(token);
+      const errorMessage = `Cannot resolve token ${name}`;
+      console.error(errorMessage, token);
+      throw new Error(errorMessage);
+    }
 
     if (resolver.life === 'value') {
       return resolver.value;

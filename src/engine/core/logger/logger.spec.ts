@@ -70,6 +70,7 @@ describe('Logger', () => {
     await logger.engine('engine');
     Assert.isTrue(engine1.props.engine);
 
+
     await logger.LOG({
       level: 100,
       message: 'test',

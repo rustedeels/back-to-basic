@@ -125,8 +125,18 @@ export class Assert {
       throw new Error(message ?? `Assertion failed, value is null or undefined: ${value}`);
     }
   }
-}
 
+  static throws(fn: () => void, message?: string): void {
+    try {
+      fn();
+    } catch (e) {
+      console.log('Assert.throws: ', e);
+      return;
+    }
+
+    throw new Error(message ?? 'Assertion failed, function did not throw');
+  }
+}
 
 export function describe(name: string, action: () => void) {
   suitsToTest.push([name, action]);
@@ -270,7 +280,7 @@ export async function runTests() {
   const results: SuiteResult[] = [];
   const toTest: TestSuite[] = [];
 
-  for(const [name, action] of suitsToTest) {
+  for (const [name, action] of suitsToTest) {
     suite = {
       id: createId(),
       name,

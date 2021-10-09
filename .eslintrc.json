@@ -33,6 +33,7 @@
             "error",
             "always"
         ],
-        "import/extensions": ["error", "ignorePackages", { "js": "always" }]
+        "import/extensions": ["error", "ignorePackages", { "js": "always" }],
+        "@typescript-eslint/ban-types": "off"
     }
 }

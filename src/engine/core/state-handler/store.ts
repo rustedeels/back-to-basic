@@ -2,6 +2,8 @@ import {
   Subscription,
   ValueSubject,
 } from '../reactive/index.js';
+import { EntitiesHandler } from './entities-handler.js';
+import { ExtensionStoreHandler } from './extension-handler.js';
 import { RawState } from './models.js';
 import { Proxies } from './proxies.js';
 
@@ -10,11 +12,20 @@ export class Store<T extends object> {
   private _currentState: ValueSubject<T>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly _propsValues = new Map<keyof T, ValueSubject<any>>();
-  private readonly _extensions = new Map<Symbol, Store<object>>();
+  private readonly _extensions = new ExtensionStoreHandler();
+  private readonly _entities = new EntitiesHandler();
 
   public constructor(initialState: T) {
     this._currentState = new ValueSubject(initialState);
     this._currentState.subscribe(state => this.triggerPropsSubjects(state));
+  }
+
+  public get entities(): EntitiesHandler {
+    return this._entities;
+  }
+
+  public get extensions(): ExtensionStoreHandler {
+    return this._extensions;
   }
 
   /** Get last state at this moment */
@@ -48,54 +59,20 @@ export class Store<T extends object> {
     });
   }
 
-  /** Check if extension is implemented for name */
-  public hasExtension(name: string): boolean {
-    return this._extensions.has(Symbol.for(name));
-  }
-
-  /**
-   * Get extension state by name, if not found, throw error
-   *
-   * @param name extension name
-   */
-  public extend<Z extends object>(name: string): Store<Z>;
-  /**
-   * Get extension state by name, if not found, create it
-   *
-   * @param name extension name
-   * @param state initial state
-   */
-  public extend<Z extends object>(name: string, state: Z): Store<Z>;
-  public extend<Z extends object>(name: string, state?: Z): Store<Z> {
-    if (this.hasExtension(name)) {
-      return this._extensions.get(Symbol.for(name)) as unknown as Store<Z>;
-    }
-
-    if (!state) { throw new Error(`Extension ${name} not found`); }
-
-    const extension = new Store<Z>(state);
-    this._extensions.set(Symbol.for(name), extension as unknown as Store<object>);
-    return extension;
-  }
-
-  /** Create or update extension state */
-  public setExtension<Z extends object>(name: string, state: Z): void {
-    if (!this.hasExtension(name)) {
-      this.extend(name, state);
-    } else {
-      this.extend(name).update(state);
-    }
-  }
-
   /** Export state to object */
   public export(): RawState<T> {
     const raw: RawState<T> = {
       state: this.state,
       extensions: {},
+      entities: {},
     };
 
-    for (const [name, extension] of this._extensions) {
+    for (const [name, extension] of this._extensions.all()) {
       raw.extensions[String(name)] = extension.export();
+    }
+
+    for (const [name, entityStore] of this._entities.all()) {
+      raw.entities[String(name)] = entityStore.export();
     }
 
     return raw;
@@ -106,7 +83,11 @@ export class Store<T extends object> {
     this._currentState.next(raw.state);
 
     for (const [name, extension] of Object.entries(raw.extensions)) {
-      this.setExtension(name, extension);
+      this._extensions.set(name, extension);
+    }
+
+    for (const [name, entity] of Object.entries(raw.entities)) {
+      this._entities.ensureEntityStore(name, entity.idProp, entity.state);
     }
   }
 

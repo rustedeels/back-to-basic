@@ -1,5 +1,9 @@
 /** Constructor type */
-export type Type<T> = { new (...args: unknown[]): T };
+export interface Type<T> extends Function {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new(...args: any[]): T;
+}
+
 
 /** Token to be instantiated */
 export type Token<T> = Type<T> | symbol;

@@ -12,6 +12,7 @@ export class EntityStore<T extends object, K extends keyof T> {
   private readonly _event: Subject<EntityStoreEvent<T>> = new Subject();
   private readonly _state: Map<T[K], Store<T>> = new Map();
   private readonly _key: K;
+  private _parser?: (id: string) => T[K] | undefined;
 
   public constructor(idProp: K, initialState: T[] = []) {
     this._key = idProp;
@@ -19,6 +20,15 @@ export class EntityStore<T extends object, K extends keyof T> {
     for (const i of initialState) {
       this._state.set(i[idProp], new Store(i));
     }
+  }
+
+  /** Try to parse an id from string */
+  public tryParseId(id: string): T[K] | undefined {
+    if (this._parser) {
+      return this._parser(id);
+    }
+
+    return this.defaultParser(id);
   }
 
   /** Allow to listen for store changes */
@@ -135,11 +145,33 @@ export class EntityStore<T extends object, K extends keyof T> {
     }
   }
 
+  public setParser(parser: (id: string) => T[K] | undefined): void {
+    this._parser = parser;
+  }
+
   private _emit(eventType: EntityStoreEventType, entity: T): void {
     this._event.next({
       type: eventType,
       entity,
       state: this.state,
     });
+  }
+
+  private defaultParser(id: string): T[K] | undefined {
+    const item = [...this._state.values()][0]?.state;
+    if (!item) {
+      return undefined;
+    }
+
+    const type = typeof item[this._key];
+    if (type === 'string') { return id as unknown as T[K]; }
+    if (type === 'number') { return Number(id) as unknown as T[K]; }
+    if (type === 'symbol') { return Symbol.for(id) as unknown as T[K]; }
+    if (type === 'bigint') { return BigInt(id) as unknown as T[K]; }
+    if (type === 'boolean') { return Boolean(id) as unknown as T[K]; }
+    if (type === 'object') { return JSON.parse(id) as unknown as T[K]; }
+    if (type === 'function') { return eval(id) as unknown as T[K]; }
+
+    return undefined;
   }
 }

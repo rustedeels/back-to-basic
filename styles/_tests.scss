@@ -1,9 +1,23 @@
-.test {
+:root {
+  --c-waiting: cyan;
+  --c-success: green;
+  --c-failure: red;
+}
 
+.test {
   &-suite {
     font-size: 2rem;
     padding: 0.3125rem;
-    padding-left: 1rem;
+    padding-left: 2.5rem;
+    position: relative;
+
+    &::before {
+      content: '⌚';
+      font-size: 1.7rem;
+      position: absolute;
+      left: 0;
+      color: var(--c-waiting);
+    }
 
     &-header {
       cursor: pointer;
@@ -15,22 +29,31 @@
         display: none;
       }
     }
+
+    &-passed {
+      &::before {
+        content: '✅';
+      }
+    }
+
+    &-failed {
+      &::before {
+        content: '❌';
+      }
+    }
   }
 
   &-unit {
-    --c-waiting: cyan;
-    --c-success: green;
-    --c-failure: red;
 
     padding-left: 1rem;
     font-size: 1.3rem;
     color: var(--c-waiting);
 
-    &.test-unit-passed {
+    &-passed {
       color: var(--c-success);
     }
 
-    &.test-unit-failed {
+    &-failed {
       color: var(--c-failure);
     }
   }

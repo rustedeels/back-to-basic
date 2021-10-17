@@ -24,10 +24,6 @@ class TestHandler {
   public valueEv2 = '';
   public valueEv3 = 0;
 
-  public constructor() {
-    console.log('TestHandler constructor');
-  }
-
   @Event<AppEvents>('ev1')
   public handleEv1(value?: string) {
     this.valueEv1 = value ?? '';

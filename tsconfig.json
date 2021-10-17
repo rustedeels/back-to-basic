@@ -20,9 +20,15 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
     "paths": {
-      "/*": ["./src/*", "./public/*"]
+      "/*": [
+        "./src/*",
+        "./public/*"
+      ]
     }
   },
-  "include": ["./src/**/*.ts"],
+  "include": [
+    "./src/**/*.ts"
+  ],
 }

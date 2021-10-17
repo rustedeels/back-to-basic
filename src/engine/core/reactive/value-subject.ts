@@ -10,8 +10,14 @@ export class ValueSubject<T> extends Subject<T> {
     this._value = value;
   }
 
-  public override subscribe(fn: (value: T) => void): Subscription {
-    fn(this._value);
+  /**
+   * Subscribe to subject
+   * @param fn action
+   * @param skipInitial skipt call for initial value
+   * @returns
+   */
+  public override subscribe(fn: (value: T) => void, skipInitial = false): Subscription {
+    if (!skipInitial) { fn(this._value); }
     return super.subscribe(fn);
   }
 

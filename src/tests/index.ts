@@ -103,13 +103,37 @@ export class Assert {
   }
 
   static isEmpty(value: any, message?: string): void {
-    if (value !== '') {
+    if (typeof value === 'string' && value !== '') {
+      throw new Error(message ?? `Assertion failed, value is not empty: ${value}`);
+    }
+
+    if (Array.isArray(value) && value.length > 0) {
+      throw new Error(message ?? `Assertion failed, value is not empty: ${value}`);
+    }
+
+    if (value instanceof Map && value.size > 0) {
+      throw new Error(message ?? `Assertion failed, value is not empty: ${value}`);
+    }
+
+    if (value instanceof Set && value.size > 0) {
       throw new Error(message ?? `Assertion failed, value is not empty: ${value}`);
     }
   }
 
   static isNotEmpty(value: any, message?: string): void {
-    if (value === '') {
+    if (typeof value === 'string' && value === '') {
+      throw new Error(message ?? `Assertion failed, value is empty: ${value}`);
+    }
+
+    if (Array.isArray(value) && value.length === 0) {
+      throw new Error(message ?? `Assertion failed, value is empty: ${value}`);
+    }
+
+    if (value instanceof Map && value.size === 0) {
+      throw new Error(message ?? `Assertion failed, value is empty: ${value}`);
+    }
+
+    if (value instanceof Set && value.size === 0) {
       throw new Error(message ?? `Assertion failed, value is empty: ${value}`);
     }
   }
@@ -171,7 +195,7 @@ function callRender(render: () => void): Promise<void> {
 function renderToTest(toTest: TestSuite[]) {
   for (const s of toTest) {
     const root = document.createElement('div');
-    root.classList.add('test-suite', 'test-suite-pending');
+    root.classList.add('test-suite', 'test-suite-pending', 'test-suite-closed');
     root.id = s.id;
     root.setAttribute('data-total', s.units.length.toString());
     root.setAttribute('data-name', s.name);
@@ -225,7 +249,7 @@ function renderUnitResult(result: TestResult) {
 
 function renderSuiteResult(result: SuiteResult) {
   const suite = document.getElementById(result.id);
-  suite?.classList.replace('test-suite-running', result.passed ? 'test-suite-passed' : 'test-suite-failed');
+  suite?.classList.replace('test-suite-running', result.failed === 0 ? 'test-suite-passed' : 'test-suite-failed');
   suite?.setAttribute('data-passed', result.passed.toString());
   suite?.setAttribute('data-failed', result.failed.toString());
 }

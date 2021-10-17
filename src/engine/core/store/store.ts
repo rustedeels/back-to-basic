@@ -17,7 +17,6 @@ export class Store<T extends object> {
 
   public constructor(initialState: T) {
     this._currentState = new ValueSubject(initialState);
-    this._currentState.subscribe(state => this.triggerPropsSubjects(state));
   }
 
   public get entities(): EntitiesHandler {
@@ -34,29 +33,34 @@ export class Store<T extends object> {
   }
 
   /** Subscribe to state value */
-  public value(fn: (state: T) => void): Subscription {
-    return this._currentState.subscribe(val => fn(Proxies.readonly(val)));
+  public value(fn: (state: T) => void, skipInitial = false): Subscription {
+    return this._currentState.subscribe(val => fn(Proxies.readonly(val)), skipInitial);
   }
 
   /** Subscribe to a prop value */
-  public prop<K extends keyof T>(key: K, fn: (value: T[K]) => void): Subscription {
-    return this.getPropSubject(key).subscribe(fn);
+  public prop<K extends keyof T>(key: K, fn: (value: T[K]) => void, skipInitial = false): Subscription {
+    return this.getPropSubject(key).subscribe(fn, skipInitial);
   }
 
   /** Update state */
   public update(state: Partial<T>): void {
-    this._currentState.next({
-      ...this.state,
-      ...state,
-    });
+    const toUpdate: (keyof T)[] = [];
+    const newState = { ...this.state, ...state };
+    for (const key in state) {
+      if (this.state[key] !== newState[key]) {
+        toUpdate.push(key as keyof T);
+      }
+    }
+
+    if (toUpdate.length === 0) { return; }
+
+    this._currentState.next(newState);
+    this.triggerPropsSubjects(toUpdate, newState);
   }
 
   /** Update a property */
   public updateProp<K extends keyof T>(key: K, value: T[K]): void {
-    this._currentState.next({
-      ...this.state,
-      [key]: value,
-    });
+    this.update({ [key]: value } as unknown as Partial<T>);
   }
 
   /** Export state to object */
@@ -98,10 +102,14 @@ export class Store<T extends object> {
     return this._propsValues.get(key) as ValueSubject<T[K]>;
   }
 
-  private triggerPropsSubjects(state: T): void {
-    if (!state || this._propsValues.size === 0) return;
-    for (const [key, subject] of this._propsValues) {
-      subject.next(state[key]);
+  private triggerPropsSubjects(toUpdate: (keyof T)[], state: T): void {
+    for (const key of toUpdate) {
+      this.triggerPropSubjects(key, state[key]);
     }
+  }
+
+  private triggerPropSubjects<K extends keyof T>(key: K, value: T[K]): void {
+    const propSubject = this._propsValues.get(key);
+    if (propSubject) { propSubject.next(value); }
   }
 }

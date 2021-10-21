@@ -22,6 +22,9 @@ export enum InitPriority {
   /** Core modules and logic */
   Core = 0,
 
+  /** System funcionality */
+  System = 50,
+
   /** Modules that are used by other modules */
   Default = 100,
 

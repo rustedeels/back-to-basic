@@ -66,20 +66,20 @@ export class EntityStore<T extends object, K extends keyof T> {
   }
 
   /** Add new entity, throw if already addded */
-  public add(entity: T): void {
+  public add(entity: T): Promise<void> {
     if (this.hasEntity(entity[this._key])) {
       throw new Error(`Entity with key ${entity[this._key]} already exists`);
     }
 
     this._state.set(entity[this._key], new Store(entity));
-    this._emit('added', this.getStore(entity[this._key]).state);
+    return this._emit('added', this.getStore(entity[this._key]).state);
   }
 
   /** Update entity, throw if not found */
-  public update(entity: Partial<T>, id: T[K]): void;
+  public update(entity: Partial<T>, id: T[K]): Promise<void>;
   /** Update entity, throw if not found */
-  public update(entity: (Partial<T> & { [key in K]: T[K] })): void;
-  public update(entity: (Partial<T> & { [key in K]: T[K] }), id?: T[K]): void {
+  public update(entity: (Partial<T> & { [key in K]: T[K] })): Promise<void>;
+  public update(entity: (Partial<T> & { [key in K]: T[K] }), id?: T[K]): Promise<void> {
     const entityId = id ?? entity[this._key] as T[K];
 
     if (!entityId) {
@@ -93,37 +93,43 @@ export class EntityStore<T extends object, K extends keyof T> {
     }
 
     this.getStore(entityId).update(entity);
-    this._emit('updated', this.getEntity(entityId));
+    return this._emit('updated', this.getEntity(entityId));
   }
 
   /** update all entities */
-  public updateAll(entityList: (Partial<T> & { [key in K]: T[K] })[]): void {
+  public updateAll(entityList: (Partial<T> & { [key in K]: T[K] })[]): Promise<void> {
+    const promises = [];
     for (const entity of entityList) {
-      this.update(entity);
+      promises.push(this.update(entity));
     }
+
+    return Promise.all(promises).then(() => { /** force void */ });
   }
 
   /** Add or update entity */
-  public upsert(entity: T): void {
+  public upsert(entity: T): Promise<void> {
     if (this.hasEntity(entity[this._key])) {
-      this.update(entity);
+      return this.update(entity);
     } else {
-      this.add(entity);
+      return this.add(entity);
     }
   }
 
   /** Upsert all entities */
-  public upsertAll(entities: T[]): void {
-    for (const entity of entities) {
-      this.upsert(entity);
+  public upsertAll(entityList: T[]): Promise<void> {
+    const promises = [];
+    for (const entity of entityList) {
+      promises.push(this.upsert(entity));
     }
+
+    return Promise.all(promises).then(() => { /** force void */ });
   }
 
   /** Remove entity, throw if not found */
-  public remove(id: T[K]): void {
+  public remove(id: T[K]): Promise<void> {
     const state = this.getStore(id).state;
     this._state.delete(id);
-    this._emit('removed', state);
+    return this._emit('removed', state);
   }
 
   public export(): RawEntitiesState<T> {
@@ -149,8 +155,8 @@ export class EntityStore<T extends object, K extends keyof T> {
     this._parser = parser;
   }
 
-  private _emit(eventType: EntityStoreEventType, entity: T): void {
-    this._event.next({
+  private _emit(eventType: EntityStoreEventType, entity: T): Promise<void> {
+    return this._event.next({
       type: eventType,
       entity,
       state: this.state,

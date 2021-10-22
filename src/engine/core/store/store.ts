@@ -43,7 +43,7 @@ export class Store<T extends object> {
   }
 
   /** Update state */
-  public update(state: Partial<T>): void {
+  public async update(state: Partial<T>): Promise<void> {
     const toUpdate: (keyof T)[] = [];
     const newState = { ...this.state, ...state };
     for (const key in state) {
@@ -54,13 +54,13 @@ export class Store<T extends object> {
 
     if (toUpdate.length === 0) { return; }
 
-    this._currentState.next(newState);
-    this.triggerPropsSubjects(toUpdate, newState);
+    await this._currentState.next(newState);
+    await this.triggerPropsSubjects(toUpdate, newState);
   }
 
   /** Update a property */
-  public updateProp<K extends keyof T>(key: K, value: T[K]): void {
-    this.update({ [key]: value } as unknown as Partial<T>);
+  public updateProp<K extends keyof T>(key: K, value: T[K]): Promise<void> {
+    return this.update({ [key]: value } as unknown as Partial<T>);
   }
 
   /** Export state to object */
@@ -102,14 +102,18 @@ export class Store<T extends object> {
     return this._propsValues.get(key) as ValueSubject<T[K]>;
   }
 
-  private triggerPropsSubjects(toUpdate: (keyof T)[], state: T): void {
+  private async triggerPropsSubjects(toUpdate: (keyof T)[], state: T): Promise<void> {
+    const promises: Promise<void>[] = [];
+
     for (const key of toUpdate) {
-      this.triggerPropSubjects(key, state[key]);
+      promises.push(this.triggerPropSubjects(key, state[key]));
     }
+
+    await Promise.all(promises);
   }
 
-  private triggerPropSubjects<K extends keyof T>(key: K, value: T[K]): void {
+  private async triggerPropSubjects<K extends keyof T>(key: K, value: T[K]): Promise<void> {
     const propSubject = this._propsValues.get(key);
-    if (propSubject) { propSubject.next(value); }
+    if (propSubject) { return propSubject.next(value); }
   }
 }

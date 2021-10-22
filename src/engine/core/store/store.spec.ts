@@ -49,7 +49,7 @@ describe('Store', () => {
     Assert.isEqual(store.state.name, 'Jane');
   });
 
-  it('Should be able subscribe to state changes', () => {
+  it('Should be able subscribe to state changes', async () => {
     const store = new Store<Person>({
       name: 'John',
       age: 30,
@@ -58,15 +58,15 @@ describe('Store', () => {
     let stateChanged = false;
     store.value(() => stateChanged = true, true);
 
-    store.update({ name: 'Jane' });
+    await store.update({ name: 'Jane' });
     Assert.isTrue(stateChanged);
 
     stateChanged = false;
-    store.updateProp('name', 'Jane');
+    await store.updateProp('name', 'Jane');
     Assert.isFalse(stateChanged);
   });
 
-  it('Should be able to subscribe to a property changes', () => {
+  it('Should be able to subscribe to a property changes', async () => {
     const store = new Store<Person>({
       name: 'John',
       age: 30,
@@ -76,14 +76,14 @@ describe('Store', () => {
     store.prop('name', () => nameChanged = true, true);
     Assert.isFalse(nameChanged);
 
-    store.update({ age: 31 });
+    await store.update({ age: 31 });
     Assert.isFalse(nameChanged);
 
-    store.updateProp('name', 'Jane');
+    await store.updateProp('name', 'Jane');
     Assert.isTrue(nameChanged);
 
     nameChanged = false;
-    store.update({ name: 'John' });
+    await store.update({ name: 'John' });
     Assert.isTrue(nameChanged);
   });
 });

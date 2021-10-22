@@ -104,7 +104,7 @@ describe('EntityStore', () => {
     Assert.isEqual(entity2.name, 'Entity 2 updated');
   });
 
-  it('Should emit event on add', () => {
+  it('Should emit event on add', async () => {
     const initialEntities: TestEntity[] = [{ id: 1, name: 'Entity 1' }];
     const store = new EntityStore('id', initialEntities);
     const entity2 = { id: 2, name: 'Entity 2' };
@@ -126,12 +126,12 @@ describe('EntityStore', () => {
       eventCalled = true;
     });
 
-    store.add(entity2);
+    await store.add(entity2);
     Assert.isTrue(eventCalled);
 
   });
 
-  it('Should emit event on update', () => {
+  it('Should emit event on update', async () => {
     const initialEntities: TestEntity[] = [
       { id: 1, name: 'Entity 1' },
       { id: 2, name: 'Entity 2' }
@@ -156,12 +156,12 @@ describe('EntityStore', () => {
       eventCalled = true;
     });
 
-    store.update(entity2);
+    await store.update(entity2);
     Assert.isTrue(eventCalled);
 
   });
 
-  it('Should emit event on remove', () => {
+  it('Should emit event on remove', async () => {
     const initialEntities: TestEntity[] = [
       { id: 1, name: 'Entity 1' },
       { id: 2, name: 'Entity 2' }
@@ -185,7 +185,7 @@ describe('EntityStore', () => {
       eventCalled = true;
     });
 
-    store.remove(2);
+    await store.remove(2);
     Assert.isTrue(eventCalled);
 
   });

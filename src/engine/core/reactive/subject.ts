@@ -1,4 +1,5 @@
 import {
+  Listner,
   Observable,
   Observer,
   ObserverError,
@@ -7,11 +8,11 @@ import {
 
 /** Only emit new values */
 export class Subject<T> implements Observer<T>, Observable<T> {
-  private readonly _subscribers: Map<(e: T) => void, Subscription> = new Map();
+  private readonly _subscribers: Map<Listner<T>, Subscription> = new Map();
   private readonly _errorCatchers: Set<(e: ObserverError) => void> = new Set();
   private _hasFinished = false;
 
-  public subscribe(fn: (e: T) => void): Subscription {
+  public subscribe(fn: Listner<T>): Subscription {
     const sub: Subscription & { _active: boolean } = {
       _active: true,
       get active() { return this._active; },
@@ -43,13 +44,18 @@ export class Subject<T> implements Observer<T>, Observable<T> {
     }
   }
 
-  public next(e: T): void {
+  public next(e: T): Promise<void> {
     if (this._hasFinished) throw new Error('Observable has finished');
 
-    for (const [fn, state] of this._subscribers) {
-      if (!state.active) continue;
-      try { fn(e); }
-      catch { /* ignore */ }
-    }
+    return new Promise(resolve => {
+      setTimeout(() => {
+        for (const [fn, state] of this._subscribers) {
+          if (!state.active) continue;
+          try { fn(e); }
+          catch { /* ignore */ }
+        }
+        resolve();
+      }, 0);
+    });
   }
 }

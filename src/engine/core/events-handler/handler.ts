@@ -22,9 +22,9 @@ export class EventsHandler<T extends object> {
    * @param event event name
    * @param data event data
    */
-  public emit<K extends Extract<keyof T, string>>(event: K, data?: T[K]): void {
+  public async emit<K extends Extract<keyof T, string>>(event: K, data?: T[K]): Promise<void> {
     this._logger.engine(`Event: ${event}`, data);
-    this.getSubject(event).next(data as T[K]);
+    await this.getSubject(event).next(data as T[K]);
   }
 
   public get<K extends Extract<keyof T, string>>(event: K): Observable<T[K]> {

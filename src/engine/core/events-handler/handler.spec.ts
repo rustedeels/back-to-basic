@@ -44,7 +44,7 @@ const handler = appContainer.resolve<EventsHandler<AppEvents>>(EventsHandler);
 
 describe('Events handler', () => {
 
-  it('should emit event to all subscribers', () => {
+  it('should emit event to all subscribers', async () => {
     let ev1 = '';
     let ev2 = '';
     const expectedEv1 = 'VALUE1';
@@ -53,7 +53,8 @@ describe('Events handler', () => {
       .subscribe(e => ev1 = e ?? '');
     const sub2 = handler.get('ev1')
       .subscribe(e => ev2 = e ?? '');
-    handler.emit('ev1', expectedEv1);
+
+    await handler.emit('ev1', expectedEv1);
 
     Assert.isEqual(ev1, expectedEv1);
     Assert.isEqual(ev2, expectedEv1);
@@ -62,7 +63,7 @@ describe('Events handler', () => {
     sub2.unsubscribe();
   });
 
-  it('should emit event to right subscriber', () => {
+  it('should emit event to right subscriber', async () => {
     let ev1 = '';
     let ev2 = '';
     const expectedEv1 = 'VALUE1';
@@ -70,8 +71,9 @@ describe('Events handler', () => {
 
     const sub1 = handler.get('ev1').subscribe(e => ev1 = e ?? '');
     const sub2 = handler.get('ev2').subscribe(e => ev2 = e ?? '');
-    handler.emit('ev1', expectedEv1);
-    handler.emit('ev2', expectedEv2);
+
+    await handler.emit('ev1', expectedEv1);
+    await handler.emit('ev2', expectedEv2);
 
     Assert.isEqual(ev1, expectedEv1);
     Assert.isEqual(ev2, expectedEv2);
@@ -92,14 +94,14 @@ describe('Events handler', () => {
     Assert.isEqual(ev1, '');
   });
 
-  it('should emit event to decorated instances', () => {
+  it('should emit event to decorated instances', async () => {
     const expectedEv1 = 'Batatas';
     const expectedEv2 = 'Tremoços';
     const expectedEv3 = 404;
 
-    handler.emit('ev1', expectedEv1);
-    handler.emit('ev2', expectedEv2);
-    handler.emit('ev3', expectedEv3);
+    await handler.emit('ev1', expectedEv1);
+    await handler.emit('ev2', expectedEv2);
+    await handler.emit('ev3', expectedEv3);
 
     const testHandler = getEventModule(TestHandler);
 

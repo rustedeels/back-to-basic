@@ -16,18 +16,18 @@ import {
   IHotkey,
 } from './models.js';
 
-function pressKeys(subject: Subject<KeyboardEvent>, keys: string[]) {
-  keys.forEach((key) => {
+async function pressKeys(subject: Subject<KeyboardEvent>, keys: string[]) {
+  for (const key of keys) {
     const event = new KeyboardEvent('keydown', { key });
-    subject.next(event);
-  });
+    await subject.next(event);
+  }
 }
 
-function releaseKeys(subject: Subject<KeyboardEvent>, keys: string[]) {
-  keys.forEach((key) => {
+async function releaseKeys(subject: Subject<KeyboardEvent>, keys: string[]) {
+  for (const key of keys) {
     const event = new KeyboardEvent('keyup', { key });
-    subject.next(event);
-  });
+    await subject.next(event);
+  }
 }
 
 function pressDocumentKeys(keys: string[]) {
@@ -60,9 +60,9 @@ describe('Hotkeys Service', () => {
     service.setSource(source);
     service.subscribe(hotkey, () => triggered = true);
 
-    pressKeys(source, hotkey.keys);
+    await pressKeys(source, hotkey.keys);
     await new Promise(resolve => setTimeout(resolve, 300));
-    releaseKeys(source, hotkey.keys);
+    await releaseKeys(source, hotkey.keys);
 
     Assert.isTrue(triggered);
   });
@@ -77,9 +77,9 @@ describe('Hotkeys Service', () => {
     service.setSource(source);
     service.subscribe(hotkey, () => triggered = true);
 
-    pressKeys(source, ['Control', 'b']);
+    await pressKeys(source, ['Control', 'b']);
     await new Promise(resolve => setTimeout(resolve, 300));
-    releaseKeys(source, ['Control', 'b']);
+    await releaseKeys(source, ['Control', 'b']);
 
     Assert.isFalse(triggered);
   });
@@ -100,9 +100,9 @@ describe('Hotkeys Service', () => {
       exclusive: true,
     });
 
-    pressKeys(source, hotkey.keys);
+    await pressKeys(source, hotkey.keys);
     await new Promise(resolve => setTimeout(resolve, 300));
-    releaseKeys(source, hotkey.keys);
+    await releaseKeys(source, hotkey.keys);
 
     Assert.isTrue(triggered);
   });
@@ -123,7 +123,7 @@ describe('Hotkeys Service', () => {
     });
 
     pressDocumentKeys(hotkey.keys);
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 350));
     releaseDocumentKeys(hotkey.keys);
 
     Assert.isTrue(triggered);

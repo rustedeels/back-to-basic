@@ -10,13 +10,13 @@ import {
 } from './index.js';
 
 describe('Reactive', () => {
-  it('Should emit values', () => {
+  it('Should emit values', async () => {
     let target = 'VALUE1';
     const expected = 'VALUE2';
 
     const subject = new Subject<string>();
     subject.subscribe((value) => { target = value; });
-    subject.next(expected);
+    await subject.next(expected);
     Assert.isEqual(expected, target);
   });
 
@@ -44,17 +44,29 @@ describe('Reactive', () => {
     Assert.isEqual('ERROR', target?.message);
   });
 
-  it('Should throw on next after complete', () => {
+  it('Should throw on next after complete', async () => {
     const subject = new Subject<string>();
     subject.complete();
 
     try {
-      subject.next('VALUE');
+      await subject.next('VALUE');
     } catch {
       Assert.isTrue(true);
       return;
     }
 
     Assert.isTrue(false);
+  });
+
+  it('Calling next, should not block current event loop', async () => {
+    const subject = new Subject<string>();
+    let triggered = false;
+
+    subject.subscribe(() => {
+      triggered = true;
+    });
+
+    subject.next('VALUE');
+    Assert.isFalse(triggered);
   });
 });

@@ -4,7 +4,7 @@ export interface Subscription {
 }
 
 export interface Observer<T> {
-  next(value: T): void;
+  next(value: T): Promise<void>;
   error(error: ObserverError): void;
   complete(): void;
 }
@@ -15,6 +15,10 @@ export interface ObserverError {
 }
 
 export interface Observable<T> {
-  subscribe(fn: (data?: T) => unknown): Subscription;
+  subscribe(fn: Listner<T>): Subscription;
   catchError(fn: (error: ObserverError) => unknown): Observable<T>;
 }
+
+export type Listner<T> =
+  ((data: T) => (unknown | Promise<unknown>))
+  | (() => (unknown | Promise<unknown>));

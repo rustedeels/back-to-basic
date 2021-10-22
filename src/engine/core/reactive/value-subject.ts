@@ -21,10 +21,10 @@ export class ValueSubject<T> extends Subject<T> {
     return super.subscribe(fn);
   }
 
-  public override next(value: T): void {
+  public override async next(value: T): Promise<void> {
     if (this._value !== value) {
       this._value = value;
-      super.next(value);
+      await super.next(value);
     }
   }
 

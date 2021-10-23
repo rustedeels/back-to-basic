@@ -16,51 +16,105 @@ import { copyStaticFiles } from './static-files.mod.ts';
 import { importTests } from './tests-file.mod.ts';
 import { transpileTypescript } from './tsc.mod.ts';
 
-async function watchStaticFiles(server: Server, info: ProjectInfo, log: boolean) {
+interface ActionErrors {
+  static?: string;
+  sass?: string;
+  ts?: string;
+}
+
+type Info = ProjectInfo & { port: number };
+
+function writeConsoleOutput(info: Info, errors: ActionErrors) {
+  const hasErrors = Object.values(errors).some(v => v !== undefined);
+  if (errors.static) {
+    Console.error(`Error copying static files: ${errors.static}`);
+  }
+  if (errors.sass) {
+    Console.error(`Error compiling sass: ${errors.sass}`);
+  }
+  if (errors.ts) {
+    Console.error(`Error compiling typescript: ${errors.ts}`);
+  }
+
+  if (!hasErrors) { console.clear(); }
+  Console.info(`\nRunning from folder: ${path.basename(info.dist)}`);
+  Console.warn(`Listening on http://127.0.0.1:${info.port}\n`);
+
+  if (errors.static) { Console.error('  static files: ERROR'); }
+  else { Console.success('  Static files: OK'); }
+
+  if (errors.sass) { Console.error('  Styles: ERROR'); }
+  else { Console.success('  Styles: OK'); }
+
+  if (errors.ts) { Console.error('  Typescript: ERROR\n'); }
+  else { Console.success('  Typescript: OK\n'); }
+}
+
+async function watchStaticFiles(server: Server, info: Info, log: boolean) {
   const watcher = Deno.watchFs(info.public, { recursive: true });
   const run = createDebounce(300);
 
   for await (const e of watcher) {
     run(async () => {
+      console.clear();
       Console.info(`Change detected in public files: ${e.paths}`);
-      await copyStaticFiles(log);
-      server.reload();
+      Console.warn('Coping static files...');
+      try {
+        await copyStaticFiles(log);
+        writeConsoleOutput(info, {});
+        server.reload();
+      } catch (err) {
+        writeConsoleOutput(info, {
+          static: err,
+        });
+      }
     });
   }
 }
 
-async function watchSourceFiles(server: Server, info: ProjectInfo, log: boolean) {
+async function watchSourceFiles(server: Server, info: Info, log: boolean) {
   const watcher = Deno.watchFs(info.src, { recursive: true });
   const run = createDebounce(300);
 
   for await (const e of watcher) {
     run(async () => {
+      console.clear();
       Console.info(`Change detected in source files: ${e.paths}`);
+      Console.warn('Transpiling typescript...');
       await copySrcToCache(log);
       const res = await transpileTypescript();
-      if (!res.success) { Console.error('Error compiling typescript'); }
+      writeConsoleOutput(info, {
+        ts: res.success ? undefined : `Code ${res.code}`,
+      });
       await importTests(info.dist, `${info.dist}/run-tests.js`);
       server.reload();
     });
   }
 }
 
-async function watchSASS(server: Server, info: ProjectInfo) {
+async function watchSASS(server: Server, info: Info) {
   const watcher = Deno.watchFs(info.styles, { recursive: true });
   const run = createDebounce(300);
 
   for await (const e of watcher) {
     run(async () => {
+      console.clear();
       Console.info(`Change detected in style files: ${e.paths}`);
+      Console.warn('Compiling styles...');
       const res = await compileSCSS(false);
-      if (!res.success) { Console.error('Error compiling sass'); }
+      writeConsoleOutput(info, {
+        sass: res.success ? undefined : `Code ${res.code}`,
+      });
       server.styles();
     });
   }
 }
 
 export async function startDevelopmentServer(port: number, log: boolean): Promise<number> {
-  const info = await getProjectInfo();
+  const info = {
+    ...await getProjectInfo(),
+    port,
+  };
 
   await fs.emptyDir(info.dist);
 
@@ -87,12 +141,13 @@ export async function startDevelopmentServer(port: number, log: boolean): Promis
 
   try {
     const root = path.basename(info.dist);
-    Console.info(`Starting server in folder: ${root}`);
     const server = createServer(root, port);
 
     watchStaticFiles(server, info, log);
     watchSourceFiles(server, info, log);
     watchSASS(server, info);
+
+    writeConsoleOutput(info, {});
 
     await server.start();
     return 0;

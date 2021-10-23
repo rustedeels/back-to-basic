@@ -5,10 +5,10 @@ export interface IFileSystem {
   get seprator(): string;
 
   /** Directory where application was started */
-  get workingDirectory(): string;
+  get workingDirectory(): Promise<string>;
 
   /** Diretory where to store data */
-  get userData(): string;
+  get userData(): Promise<string>;
 
   /** Read a text file from a PATH */
   readTextFile(path: string): Promise<string>;
@@ -40,10 +40,10 @@ export interface IFileSystem {
   move(src: string, dest: string): Promise<void>;
 
   /** Map webpath to OS path */
-  mapToOSPath(path: string): string;
+  mapToOSPath(path: string): Promise<string>;
 
   /** Map OS path to webpath */
-  mapToWebPath(path: string): string;
+  mapToWebPath(path: string): Promise<string>;
 }
 
 export interface IPath {

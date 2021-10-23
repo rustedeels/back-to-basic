@@ -107,10 +107,6 @@ export function createServer(folder: string, port: number): Server {
     });
   });
 
-  app.addEventListener('listen', ({ hostname, port }) => {
-    Console.success(`Listening on http://${hostname}:${port}`);
-  });
-
   const handleError = (event: ErrorEvent) => {
     if (!event.message) return;
 

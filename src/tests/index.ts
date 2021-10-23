@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+export * from './mock.js';
+
 interface TestUnit {
   id: string;
   name: string;
@@ -90,13 +92,13 @@ export class Assert {
     }
   }
 
-  static isUndefined(value: any, message?: string): void {
+  static isUndefined<T>(value: T | undefined, message?: string): asserts value is undefined {
     if (value !== undefined) {
       throw new Error(message ?? `Assertion failed, value is not undefined: ${value}`);
     }
   }
 
-  static isNotUndefined(value: any, message?: string): void {
+  static isNotUndefined<T>(value: T | undefined, message?: string): asserts value is T {
     if (value === undefined) {
       throw new Error(message ?? `Assertion failed, value is undefined: ${value}`);
     }
@@ -144,7 +146,7 @@ export class Assert {
     }
   }
 
-  static isNotNullOrUndefined(value: any, message?: string): void {
+  static isNotNullOrUndefined<T>(value: unknown, message?: string): asserts value is T {
     if (value === null || value === undefined) {
       throw new Error(message ?? `Assertion failed, value is null or undefined: ${value}`);
     }

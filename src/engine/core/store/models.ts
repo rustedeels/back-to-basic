@@ -65,3 +65,9 @@ export function isEntityStorePart(path: StorePart): path is EntityStorePart {
 export function isEntityStoreSinglePart(path: StorePart): path is EntityStoreSinglePart {
   return (path as EntityStoreSinglePart).single === true;
 }
+
+export interface AppState {
+  version: string;
+  lastUpdate: string;
+  name: string;
+}

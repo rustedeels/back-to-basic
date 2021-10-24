@@ -9,3 +9,7 @@ export function getRandomName(prefix = ''): string {
 
   return prefix + Math.random().toString(36).substr(2, 9);
 }
+
+export function filterUndefined<T>(array: (T | undefined)[]): T[] {
+  return array.filter(Boolean) as T[];
+}

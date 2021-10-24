@@ -7,15 +7,18 @@ import {
 import { Subscription } from '../core/reactive/models.js';
 import { PlatformEvents } from './events.js';
 import { IFileSystem } from './file-system.js';
+import { ISavegame } from './save-game.js';
 
 export interface IPlatform {
   get fileSystem(): IFileSystem;
+  get savegame(): ISavegame;
   exit(code?: number): Promise<void>;
 }
 
 @Injectable()
 export class PlatformService implements IPlatform {
   private _fileSystem?: IFileSystem;
+  private _savegame?: ISavegame;
   private _exitAction?: (code?: number) => Promise<void>;
 
   private _exitSub?: Subscription;
@@ -29,13 +32,26 @@ export class PlatformService implements IPlatform {
   /** ========================File System=========================== */
   public get fileSystem(): IFileSystem {
     if (!this._fileSystem) {
-      throw new Error('File system is not initialized.');
+      throw new Error('File system module is not initialized.');
     }
     return this._fileSystem;
   }
 
   private set fileSystem(value: IFileSystem) {
     this._fileSystem = value;
+  }
+  /** ============================================================== */
+
+  /** ==========================Savegame============================ */
+  public get savegame(): ISavegame {
+    if (!this._savegame) {
+      throw new Error('Savegame module is not initialized.');
+    }
+    return this._savegame;
+  }
+
+  private set savegame(value: ISavegame) {
+    this._savegame = value;
   }
   /** ============================================================== */
 

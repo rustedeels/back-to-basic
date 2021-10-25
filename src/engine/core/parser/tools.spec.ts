@@ -4,7 +4,6 @@ import {
   it,
 } from '/tests/index.js';
 
-import { ValuePropertyParser } from './models.js';
 import * as ParserTools from './tools.js';
 
 describe('Parser tools', () => {
@@ -41,49 +40,5 @@ describe('Parser tools', () => {
 
     Assert.isEqual(contentLines[0], '# other values 1');
     Assert.isEqual(contentLines[1], '# other values 2');
-  });
-
-  it('Can split by regex', () => {
-    const content = `# BLOCK
-    dome data
-    batatas
-    potatos
-`;
-
-    const source = `${content}${content}${content}${content}`;
-    const res = ParserTools.regexSplit(source, /^# BLOCK$/m);
-
-    Assert.isEqual(res.length, 4);
-    Assert.isEqual(res[0], content);
-    Assert.isEqual(res[1], content);
-    Assert.isEqual(res[2], content);
-    Assert.isEqual(res[3], content);
-  });
-
-  it('Can extract property by number', () => {
-    const data = '# DATA|BODY';
-    const match = /^# DATA\|(.*)$/gm.exec(data);
-
-    Assert.isNotNull(match);
-
-    const value = ParserTools.getPropValue(match, 1);
-
-    Assert.isEqual(value, 'BODY');
-  });
-
-  it('Can extract property by ValuePropParser', () => {
-    const data = '# DATA|10';
-    const match = /^# DATA\|(.*)$/gm.exec(data);
-    const parser: ValuePropertyParser<number> = {
-      index: [1],
-      default: '0',
-      parse: (v) => Number(v),
-    };
-
-    Assert.isNotNull(match);
-
-    const value = ParserTools.getPropValue(match, parser);
-
-    Assert.isEqual(value, '10');
   });
 });

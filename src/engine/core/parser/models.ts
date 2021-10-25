@@ -1,73 +1,50 @@
-/** Parser for a single entity */
-export interface ValuePropertyParser<T> {
+/** Function to parse a value */
+export type ParseFunction<T> =
+  T extends string ? ((str: string, prefix: string) => T) | undefined
+  : (str: string, prefix: string) => T
+
+export type Parser<T> = ParseFunction<T>
+  | (T extends object
+    ? (
+      T extends (infer U)[]
+      ? (
+        U extends object
+        ? EntityParser<U> : never
+      )
+      : EntityParser<T>)
+    : never);
+
+/** Model to parse a group match */
+export interface GroupParser<T> {
+  /** Group index, will return first with value */
   index: number[];
+  /** Value to use if no match is found */
   default?: string;
-  parse: (value: string, prefix: string) => T;
+  /** Parse logic */
+  parser: Parser<T>;
 }
 
-/** Parser for multiple values */
-export interface ArrayPropertyParser<T> {
-  index: number[];
-  default?: string;
-  parse: (value: string, prefix: string) => T[];
-  multi: true;
-}
-
-/** Parser for a single property */
-export type PropertyParser<T> = T extends (infer U)[] ? ArrayPropertyParser<U> | number : ValuePropertyParser<T> | number;
-
-export interface BaseParser<T extends object> {
-  /** Expression to match entity */
+/** Parser model for an entity */
+export interface EntityParser<T extends object> {
+  /** Expression to match entity in source */
   matchExp: RegExp;
-  /** Parser for each property */
-  map: EntityParserMap<T>;
+  /** Entity properties parsers */
+  matchMap: EntityParserMap<T>;
   /** Apply action before parsing source */
   beforeParse?: (prefix: string, source: string) => [prefix: string, source: string];
   /** Apply action after parsing source */
-  afterParse?: (prefix: string, source: string, result: T) => T;
+  afterParse?: (prefix: string, match: RegExpMatchArray, result: T) => T;
 }
 
-/** Parser for a single entity */
-export interface SingleParser<T extends object> extends BaseParser<T> {
-  /** Child entities */
-  childs?: {
-    [key in Extract<keyof T, string>]?: ChildParser<T, key>;
-  }
-}
-
-/** Parse multiple values from one soure */
-export interface MultiParser<T extends object> extends BaseParser<T> {
-  /** Set as multiple values parser */
-  multi: true;
-}
-
-/** Parser for childs */
-export type ChildParser<T extends object, K extends Extract<keyof T, string>> =
-  T[K] extends (infer U)[] ?
-  U extends object ?
-  MultiParser<U> : never
-  : T[K] extends object ?
-  SingleParser<T[K]> : never;
-
-export type EntityParser<T extends object> = SingleParser<T> | MultiParser<T>;
-
+/** Property parse map for an entity */
 export type EntityParserMap<T extends object> = {
-  [K in Extract<keyof T, string>]?: PropertyParser<T[K]>;
+  [key in keyof T]?: GroupParser<T[key]> | (T[key] extends string ? number : never);
 }
 
-/** Document parser */
-export interface ISingleNodeParser<T extends object> {
-  /** Define if prefix is extracted */
+/** Parser for a file */
+export interface FileParser<T extends object> {
+  /** Treat first line as prefix */
   usePrefix: boolean;
-  /** Parser for document source */
-  parser: EntityParser<T>;
+  /** Parser to use */
+  entityParser: EntityParser<T>;
 }
-
-/** Document parser */
-export interface IMultiNodeParser<T extends object> extends ISingleNodeParser<T> {
-  /** Expression to split source */
-  splitExp: RegExp;
-}
-
-/** Document parser */
-export type DocumentParser<T extends object> = ISingleNodeParser<T> | IMultiNodeParser<T>;

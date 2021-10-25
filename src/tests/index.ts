@@ -86,7 +86,7 @@ export class Assert {
     }
   }
 
-  static isNotNull(value: any, message?: string): void {
+  static isNotNull<T>(value: T | null, message?: string): asserts value is T {
     if (value === null) {
       throw new Error(message ?? `Assertion failed, value is null: ${value}`);
     }

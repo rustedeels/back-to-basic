@@ -14,7 +14,7 @@ export class EventsHandler<T extends object> {
   private readonly _events: Map<string, Subject<unknown>> = new Map();
 
   @Inject()
-  private _logger!: LoggerService
+  private _logger!: LoggerService;
 
   /**
    * Emit a new event

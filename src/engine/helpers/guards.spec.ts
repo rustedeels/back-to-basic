@@ -5,6 +5,7 @@ import {
 } from '/tests/index.js';
 
 import {
+  assertInstanceOf,
   isObject,
   isValue,
 } from './guards.js';
@@ -26,5 +27,19 @@ describe('Helper Guards', () => {
     Assert.isTrue(isValue('1'));
     Assert.isTrue(isValue({}));
     Assert.isTrue(isValue([]));
+  });
+
+  it('should assert value is instance of', () => {
+    class P1 { }
+    class P2 extends P1 { }
+
+    const target1 = new P1();
+    const target2 = new P2();
+
+    assertInstanceOf(target1, P1);
+    Assert.isTrue(true);
+    assertInstanceOf(target2, P1);
+    Assert.isTrue(true);
+    Assert.throws(() => assertInstanceOf(target1, P2));
   });
 });

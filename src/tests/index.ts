@@ -194,6 +194,35 @@ function callRender(render: () => void): Promise<void> {
   });
 }
 
+function checkElemHasFocus(name: string, focusClass: string): boolean {
+  const elem = document.querySelector(`[data-name="${name}"]`);
+  if (!elem) { return false; }
+
+  return elem.classList.contains(focusClass);
+}
+
+function toggleFocus(name: string): void {
+  const focusClass = 'test-suite-focus';
+  const hasFocus = checkElemHasFocus(name, focusClass);
+  if (hasFocus) {
+    document.querySelectorAll(`.${focusClass}`).forEach((elem) => {
+      elem.classList.remove(focusClass);
+    });
+    localStorage.setItem('test-suite-focus', '');
+  } else {
+    document.querySelectorAll(`.${focusClass}`).forEach((elem) => elem.classList.remove(focusClass));
+    document.querySelector(`[data-name="${name}"]`)?.classList.add(focusClass);
+    localStorage.setItem('test-suite-focus', name);
+  }
+}
+
+function createPinButton(name: string): HTMLButtonElement {
+  const pinButton = document.createElement('button');
+  pinButton.classList.add('test-button', 'test-suite-pin');
+  pinButton.addEventListener('click', () => toggleFocus(name));
+  return pinButton;
+}
+
 function renderToTest(toTest: TestSuite[]) {
   for (const s of toTest) {
     const root = document.createElement('div');
@@ -231,6 +260,9 @@ function renderToTest(toTest: TestSuite[]) {
 
       body.appendChild(unit);
     }
+    const btn = createPinButton(s.name);
+    root.appendChild(btn);
+
     document.body.appendChild(root);
   }
   document.body.classList.remove('test-loading');
@@ -302,7 +334,22 @@ export async function runUnitTests(suiteId: string, unit: TestUnit) {
   return result;
 }
 
+function enableStyleButton() {
+  const styleButton = document.getElementsByClassName('test-button-styles')[0];
+  if (!styleButton) return;
+
+  styleButton.addEventListener('click', () => {
+    document.body.classList.toggle('grid');
+  });
+}
+
+function initFocus() {
+  const focus = localStorage.getItem('test-suite-focus');
+  if (focus) { toggleFocus(focus); }
+}
+
 export async function runTests() {
+  enableStyleButton();
   const results: SuiteResult[] = [];
   const toTest: TestSuite[] = [];
 
@@ -317,6 +364,8 @@ export async function runTests() {
   }
 
   await callRender(() => renderToTest(toTest));
+
+  initFocus();
 
   for (const s of toTest) {
     console.groupCollapsed(s.name);

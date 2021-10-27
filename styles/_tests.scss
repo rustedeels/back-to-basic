@@ -4,7 +4,29 @@
   --c-failure: red;
 }
 
+button.test-button {
+  background-color: #011627;
+  color: rgb(197, 197, 197);
+  border-radius: 0;
+  outline: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #011f38;
+    color: #fff;
+  }
+}
+
 .test {
+  &-button-styles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 25px;
+    height: 25px;
+  }
+
   &-suite {
     font-size: 2rem;
     padding: 0.3125rem;
@@ -19,6 +41,24 @@
       color: var(--c-waiting);
     }
 
+    &-pin {
+      position: absolute;
+      top: 40px;
+      display: flex;
+      background-color: transparent !important;
+
+      &::before {
+        content: '📌';
+        position: absolute;
+        left: -1.7rem;
+        font-size: 1.7rem;
+      }
+
+      &:hover {
+        background-color: transparent !important;
+      }
+    }
+
     &-header {
       cursor: pointer;
       user-select: none;
@@ -26,6 +66,10 @@
 
     &-closed {
       .test-unit {
+        display: none;
+      }
+
+      .test-suite-pin {
         display: none;
       }
     }
@@ -39,6 +83,33 @@
     &-failed {
       &::before {
         content: '❌';
+      }
+    }
+
+    &-focus {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px;
+      border: 1px solid #012441;
+      background-color: #012441;
+      z-index: 100;
+
+      .test-unit {
+        display: block;
+      }
+
+      &::before {
+        display: none;
+      }
+
+      .test-suite-pin {
+        display: flex;
+        &::before {
+          top: -2rem;
+          left: -3rem;
+        }
       }
     }
   }
@@ -62,4 +133,11 @@
     font-size: 3rem;
     padding: 2rem;
   }
+}
+
+body.grid {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
 }

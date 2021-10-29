@@ -10,6 +10,12 @@ export function getRandomName(prefix = ''): string {
   return prefix + Math.random().toString(36).substr(2, 9);
 }
 
-export function filterUndefined<T>(array: (T | undefined)[]): T[] {
+/** Filter out false values */
+export function filterUndefined<T>(array: (T | undefined | false | null | '' | 0)[]): T[] {
   return array.filter(Boolean) as T[];
+}
+
+/** Sleep current stack */
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

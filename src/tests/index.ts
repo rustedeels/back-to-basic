@@ -1,6 +1,7 @@
 export * from './mock.js';
 export * from './assert.js';
 
+type SetupFn = () => void | Promise<void>;
 interface TestUnit {
   id: string;
   name: string;
@@ -11,6 +12,7 @@ interface TestSuite {
   id: string;
   name: string;
   units: TestUnit[];
+  setup?: SetupFn;
 }
 
 interface TestResult {
@@ -51,13 +53,16 @@ const suitsToTest: [string, () => void][] = [];
 let suite: TestSuite = {
   id: '',
   name: '',
-  units: []
+  units: [],
 };
 
 export function describe(name: string, action: () => void) {
   suitsToTest.push([name, action]);
 }
 
+export function setup(fn: SetupFn): void {
+  suite.setup = fn;
+}
 export function it(name: string, runTest: () => void | Promise<void>) {
   const testUnit: TestUnit = {
     id: createId(),
@@ -238,6 +243,20 @@ function initFocus() {
   if (focus) { toggleFocus(focus); }
 }
 
+async function runSetup(s: TestSuite) {
+  if (!s.setup) return;
+
+  console.groupCollapsed(`Setup: ${s.name}`);
+
+  try {
+    await s.setup();
+  } catch (e) {
+    console.error(e);
+  }
+
+  console.groupEnd();
+}
+
 export async function runTests() {
   enableStyleButton();
   const results: SuiteResult[] = [];
@@ -247,7 +266,7 @@ export async function runTests() {
     suite = {
       id: createId(),
       name,
-      units: []
+      units: [],
     };
     action();
     toTest.push(suite);
@@ -259,6 +278,9 @@ export async function runTests() {
 
   for (const s of toTest) {
     console.groupCollapsed(s.name);
+
+    await runSetup(s);
+
     const result: SuiteResult = {
       id: s.id,
       name: s.name,

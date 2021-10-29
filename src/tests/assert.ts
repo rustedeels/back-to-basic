@@ -107,6 +107,17 @@ export class Assert {
     throw new Error(message ?? 'Assertion failed, function did not throw');
   }
 
+  static async throwsAsync(fn: () => Promise<void>, message?: string): Promise<void> {
+    try {
+      await fn();
+    } catch (e) {
+      console.log('Assert.throws: ', e);
+      return;
+    }
+
+    throw new Error(message ?? 'Assertion failed, function did not throw');
+  }
+
   static isInstanceOf<T extends Function>(expected: T, value: unknown, message?: string): asserts value is T['prototype'] {
     if (!(value instanceof expected)) {
       throw new Error(message ?? `Assertion failed, value is not instance of ${expected.name}`);

@@ -53,4 +53,12 @@ export class StateMachine<T extends object> {
   private lastStateOrInitial(): State<T> {
     return this._story[this._story.length - 1] ?? this._initialState;
   }
+
+  public static forType<T extends object>(initialState: State<T>): StateMachine<T> {
+    return new StateMachine(initialState);
+  }
+
+  public static forString(initialState: string): StateMachine<{ [key: string]: never }> {
+    return new StateMachine(initialState);
+  }
 }

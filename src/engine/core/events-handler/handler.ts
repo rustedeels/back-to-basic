@@ -1,3 +1,5 @@
+import { StrKey } from '/engine/helpers/util-types.js';
+
 import {
   Inject,
   Injectable,
@@ -22,16 +24,16 @@ export class EventsHandler<T extends object> {
    * @param event event name
    * @param data event data
    */
-  public async emit<K extends Extract<keyof T, string>>(event: K, data?: T[K]): Promise<void> {
+  public async emit<K extends StrKey<T>>(event: K, ...data: T[K] extends never ? [undefined?] : [T[K]]): Promise<void> {
     this._logger.engine(`Event: ${event}`, data);
-    await this.getSubject(event).next(data as T[K]);
+    await this.getSubject(event).next(data[0] as T[K]);
   }
 
-  public get<K extends Extract<keyof T, string>>(event: K): Observable<T[K]> {
+  public get<K extends StrKey<T>>(event: K): Observable<T[K]> {
     return this.getSubject(event);
   }
 
-  private getSubject<K extends Extract<keyof T, string>>(event: K): Subject<T[K]> {
+  private getSubject<K extends StrKey<T>>(event: K): Subject<T[K]> {
     if (!this._events.has(event)) {
       this._events.set(event, new Subject());
     }

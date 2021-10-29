@@ -1,7 +1,8 @@
-export interface Resource {
+import { IActor } from '../actor/model.js';
+
+export interface Resource extends IActor<string> {
   id: string;
   tags: string[];
-  type: string;
   path: string;
 }
 

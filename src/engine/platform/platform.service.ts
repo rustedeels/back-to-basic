@@ -2,6 +2,7 @@ import {
   EventsHandler,
   Inject,
   Injectable,
+  IViewRender,
   LoggerService,
 } from '../core/index.js';
 import { Subscription } from '../core/reactive/models.js';
@@ -12,6 +13,7 @@ import { ISavegame } from './save-game.js';
 export interface IPlatform {
   get fileSystem(): IFileSystem;
   get savegame(): ISavegame;
+  get viewRender(): IViewRender;
   exit(code?: number): Promise<void>;
 }
 
@@ -19,6 +21,7 @@ export interface IPlatform {
 export class PlatformService implements IPlatform {
   private _fileSystem?: IFileSystem;
   private _savegame?: ISavegame;
+  private _viewRender?: IViewRender;
   private _exitAction?: (code?: number) => Promise<void>;
 
   private _exitSub?: Subscription;
@@ -39,6 +42,19 @@ export class PlatformService implements IPlatform {
 
   private set fileSystem(value: IFileSystem) {
     this._fileSystem = value;
+  }
+  /** ============================================================== */
+
+  /** =======================View Render============================ */
+  public get viewRender(): IViewRender {
+    if (!this._viewRender) {
+      throw new Error('View render module is not initialized.');
+    }
+    return this._viewRender;
+  }
+
+  private set viewRender(value: IViewRender) {
+    this._viewRender = value;
   }
   /** ============================================================== */
 

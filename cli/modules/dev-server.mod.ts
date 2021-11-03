@@ -12,6 +12,7 @@ import {
   createServer,
   Server,
 } from './server.mod.ts';
+import { importShowcases } from './showcase.mod.ts';
 import { copyStaticFiles } from './static-files.mod.ts';
 import { importTests } from './tests-file.mod.ts';
 import { transpileTypescript } from './tsc.mod.ts';
@@ -87,6 +88,7 @@ async function watchSourceFiles(server: Server, info: Info, log: boolean) {
         ts: res.success ? undefined : `Code ${res.code}`,
       });
       await importTests(info.dist, `${info.dist}/run-tests.js`);
+      await importShowcases(info.dist, `${info.dist}/show.js`);
       server.reload();
     });
   }
@@ -135,6 +137,7 @@ export async function startDevelopmentServer(port: number, log: boolean): Promis
     return 1;
   }
   await importTests(info.dist, `${info.dist}/run-tests.js`);
+  await importShowcases(info.dist, `${info.dist}/show.js`);
 
   Console.info('Copying static files');
   await copyStaticFiles(log);

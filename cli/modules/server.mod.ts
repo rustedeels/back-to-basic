@@ -92,6 +92,12 @@ export function createServer(folder: string, port: number): Server {
     ctx.response.type = 'text/html';
   });
 
+  router.get('/showcase', async (ctx) => {
+    const content = await Deno.readTextFile(`${folder}/showcase.html`);
+    ctx.response.body = addEventSource(content);
+    ctx.response.type = 'text/html';
+  });
+
   app.use(router.routes());
 
   app.use(async (context, next) => {

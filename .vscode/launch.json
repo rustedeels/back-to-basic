@@ -19,5 +19,13 @@
       "webRoot": "${workspaceFolder}/dist",
       "sourceMaps": true,
     },
+    {
+      "name": "Launch Edge showcase",
+      "request": "launch",
+      "type": "pwa-msedge",
+      "url": "http://localhost:8080/showcase",
+      "webRoot": "${workspaceFolder}/dist",
+      "sourceMaps": true,
+    },
   ]
 }

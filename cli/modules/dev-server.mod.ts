@@ -38,8 +38,15 @@ function writeConsoleOutput(info: Info, errors: ActionErrors) {
   }
 
   if (!hasErrors) { console.clear(); }
-  Console.info(`\nRunning from folder: ${path.basename(info.dist)}`);
-  Console.warn(`Listening on http://127.0.0.1:${info.port}\n`);
+  else { Console.error('======================= End Errors ====================\n'); }
+  Console.info(`Running from folder: ${path.basename(info.dist)}`);
+  Console.warn('Listening on:\n');
+
+  Console.success(`   Main: http://127.0.0.1:${info.port}`);
+  Console.success(`   Demo: http://127.0.0.1:${info.port}/demo`);
+  Console.success(`  Tests: http://127.0.0.1:${info.port}/tests`);
+
+  Console.warn('\nTranspilation results:\n');
 
   if (errors.static) { Console.error('  static files: ERROR'); }
   else { Console.success('  Static files: OK'); }

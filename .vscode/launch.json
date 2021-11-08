@@ -20,10 +20,10 @@
       "sourceMaps": true,
     },
     {
-      "name": "Launch Edge showcase",
+      "name": "Launch Edge Demo",
       "request": "launch",
       "type": "pwa-msedge",
-      "url": "http://localhost:8080/showcase",
+      "url": "http://localhost:8080/demo",
       "webRoot": "${workspaceFolder}/dist",
       "sourceMaps": true,
     },

@@ -10,7 +10,7 @@ import {
   LoggerService,
 } from '../core/index.js';
 
-@WebComponent('event-button')
+@WebComponent('sc-event-button')
 export class EventButton extends CustomElement<EventButton> {
 
   @Inject()
@@ -25,11 +25,15 @@ export class EventButton extends CustomElement<EventButton> {
   @Attribute('event', { required: true })
   declare event: string;
 
+  @Attribute('disabled', { default: false, type: Boolean })
+  declare disabled: boolean;
+
   public constructor() { super(); }
 
   public render(): RenderResult | Promise<RenderResult> {
     const btn = document.createElement('button');
     btn.innerText = this.text;
+    btn.disabled = this.disabled;
     btn.addEventListener('click', () => this.triggerEvent());
     return btn;
   }

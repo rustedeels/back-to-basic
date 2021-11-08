@@ -3,25 +3,18 @@ import { buildShowcase } from '/showcase/index.js';
 import { EventButton } from './event-button.js';
 
 buildShowcase<EventButton>({
-  category: 'Widgets',
-  name: 'Event Button',
   description: 'A button that emits an event when clicked.',
-  htmlTag: 'event-button',
-  classNames: {},
   props: {
-    text: {
-      type: 'string',
-      defaultValue: 'Button',
-      description: 'The text to display on the button.',
-      name: 'text',
-      required: false,
-    },
-    event: {
-      type: 'string',
-      defaultValue: '',
-      description: 'The event to emit when the button is clicked.',
-      name: 'event',
-      required: true,
-    },
-  }
-});
+    text: 'The text to display on the button.',
+    event: 'The event to emit when the button is clicked.',
+    disabled: 'Whether the button is disabled.',
+  },
+  templates: [{
+    name: 'Default button',
+    htmlSrc: '<sc-event-button text="Show Alert" event="showAlertEvent" />',
+    description: 'A button that emits an event when clicked.',
+  }, {
+    name: 'Disabled button',
+    htmlSrc: '<sc-event-button text="Disabled text" event="showAlertEvent" disabled />',
+  }]
+}, EventButton);

@@ -1,10 +1,20 @@
 :root {
   --color-background: #011627;
+  --color-background-light: #022038;
+
   --color-text: rgb(216, 216, 216);
 
   --color-primary: #065977;
   --color-accent: #08AFE4;
   --color-active: #FEB113;
+
+  --color-primary-light: #066385;
+  --color-accent-light: #08AFE4;
+  --color-active-light: #FEB113;
+
+  --color-primary-dark: #065977;
+  --color-accent-dark: #08AFE4;
+  --color-active-dark: #FEB113;
 }
 
 $color-background: var(--color-background);

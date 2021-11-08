@@ -2,6 +2,7 @@
 import {
   IShowcase,
   IShowcaseProps,
+  IShowcaseTemplate,
 } from './models.js';
 
 const selectedKey = '#name-selected';
@@ -33,7 +34,7 @@ function buildNamelistItem(name: string, root: HTMLElement): HTMLElement {
 }
 
 function toggleSelected(name: string) {
-  const items = document.querySelectorAll('sc-name-list__item');
+  const items = document.querySelectorAll('.sc-name-list__item');
   for (const item of items) { item.classList.remove('selected'); }
   const item = document.querySelector(`.item-${getItemName(name)}`);
   if (item) {
@@ -53,8 +54,13 @@ function selectFromLocalStorate(): string | undefined {
 function buildClassTable(root: HTMLElement, classes: { [key: string]: string }) {
   if (!Object.keys(classes).length) { return; }
 
+  const tableTitle = document.createElement('h2');
+  tableTitle.classList.add('sc-view__table-title');
+  tableTitle.innerText = 'Class Names';
+  root.appendChild(tableTitle);
+
   const classTable = document.createElement('table');
-  classTable.classList.add('sc-view__class-table');
+  classTable.classList.add('sc-view__table-class', 'sc-view__table');
   root.appendChild(classTable);
 
   const classTableHead = document.createElement('thead');
@@ -74,18 +80,102 @@ function buildClassTable(root: HTMLElement, classes: { [key: string]: string }) 
   }
 }
 
+function buildTemplateRenderView(root: HTMLElement, template: IShowcaseTemplate) {
+  const view = document.createElement('div');
+  view.classList.add('sc-template__item');
+  root.appendChild(view);
+
+  const title = document.createElement('h3');
+  title.classList.add('sc-template__item-title');
+  title.innerText = template.name;
+  view.appendChild(title);
+
+  const renderView = document.createElement('div');
+  renderView.classList.add('sc-template__item-render-view');
+  view.appendChild(renderView);
+  renderView.innerHTML = template.htmlSrc;
+
+  if (template.description) {
+    const description = document.createElement('p');
+    description.classList.add('sc-template__item-description');
+    description.innerText = template.description;
+    view.appendChild(description);
+  }
+}
+
+function buildTemplateList(root: HTMLElement, list: IShowcaseTemplate[]) {
+  if (!list.length) { return; }
+
+  const templateTitle = document.createElement('h2');
+  templateTitle.classList.add('sc-template__title');
+  templateTitle.innerText = 'Examples';
+  root.appendChild(templateTitle);
+
+  const selectView = document.createElement('div');
+  selectView.classList.add('sc-template__select', 'selected');
+  selectView.innerText = 'Render View';
+  root.appendChild(selectView);
+
+  const selectSource = document.createElement('div');
+  selectSource.classList.add('sc-template__select');
+  selectSource.innerText = 'HTML Source';
+  root.appendChild(selectSource);
+
+  const container = document.createElement('div');
+  container.classList.add('sc-template__container');
+  root.appendChild(container);
+
+  const renderView = document.createElement('div');
+  renderView.classList.add('sc-template__view', 'sc-template__view-render');
+  container.appendChild(renderView);
+
+  const sourceView = document.createElement('pre');
+  sourceView.classList.add('sc-template__view', 'sc-template__view-source');
+  sourceView.style.display = 'none';
+  container.appendChild(sourceView);
+
+  selectView.addEventListener('click', () => {
+    renderView.style.display = '';
+    sourceView.style.display = 'none';
+    selectView.classList.add('selected');
+    selectSource.classList.remove('selected');
+  });
+
+  selectSource.addEventListener('click', () => {
+    renderView.style.display = 'none';
+    sourceView.style.display = '';
+    selectView.classList.remove('selected');
+    selectSource.classList.add('selected');
+  });
+
+  for (const template of list) {
+    buildTemplateRenderView(renderView, template);
+
+    const source = document.createElement('code');
+    source.classList.add('sc-template__view-source-item');
+    source.innerText = template.htmlSrc;
+    sourceView.appendChild(source);
+  }
+
+}
+
 function buildPropsTable<T extends object>(root: HTMLElement, props: { [key in keyof T]?: IShowcaseProps }) {
   if (!Object.keys(props).length) { return; }
 
+  const tableTitle = document.createElement('h2');
+  tableTitle.classList.add('sc-view__table-title');
+  tableTitle.innerText = 'Attributes';
+  root.appendChild(tableTitle);
+
   const propsTable = document.createElement('table');
-  propsTable.classList.add('sc-view__props-table');
+  propsTable.classList.add('sc-view__table', 'sc-view__table-props');
   root.appendChild(propsTable);
 
   const propsTableHead = document.createElement('thead');
   propsTable.appendChild(propsTableHead);
 
   const propsTableHeadRow = document.createElement('tr');
-  propsTableHeadRow.innerHTML = '<th>Prop</th><th>Type</th><th>Default</th><th>Required</th><th>Description</th>';
+  propsTableHeadRow.innerHTML = '<th>Attribute</th><th>Type</th><th>Default</th><th>Required</th><th>Description</th>';
   propsTableHead.appendChild(propsTableHeadRow);
 
   const propsTableBody = document.createElement('tbody');
@@ -123,6 +213,7 @@ function buildView(showcase: IShowcase<any>, root: HTMLElement) {
 
   buildClassTable(root, showcase.classNames);
   buildPropsTable(root, showcase.props);
+  buildTemplateList(root, showcase.templates);
 }
 
 export function renderShowcase(showcase: Map<string, IShowcase<any>>, rootId: string) {

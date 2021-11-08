@@ -1,3 +1,5 @@
+import '/libs/Reflect.js';
+
 import { assertInstanceOf } from '/engine/helpers/guards.js';
 
 import {
@@ -5,10 +7,14 @@ import {
   defineAttributeProperty,
   getAttribute,
 } from './attr.utils.js';
-import { ArgAttrOption } from './models.js';
+import {
+  ArgAttrOption,
+  WEB_COMPONENT_SELECTOR,
+} from './models.js';
 
 export function WebComponent(selector: string): (target: CustomElementConstructor) => void {
   return (target: CustomElementConstructor) => {
+    Reflect.defineMetadata(WEB_COMPONENT_SELECTOR, selector, target);
     assertInstanceOf(target.prototype, HTMLElement);
     customElements.define(selector, target);
   };

@@ -1,5 +1,29 @@
-
 #{$PRE}event-button {
-  display: block;
-  position: relative;
+  @include clickable;
+  @include widget;
+
+  & > button {
+    @include clickable;
+
+    outline: none;
+    border: 1px solid var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    height: 100%;
+    font-size: inherit;
+    font-family: inherit;
+
+    &:focus:not(:disabled) {
+      border: 1px solid var(--color-accent);
+    }
+
+    &:hover:not(:disabled) {
+      border-bottom: 1px solid var(--color-active);
+    }
+
+    &:active:not(:disabled) {
+      color: white;
+      border-bottom: 1px solid var(--color-active);
+    }
+  }
 }

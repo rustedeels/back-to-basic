@@ -32,6 +32,7 @@ export class EventButton extends CustomElement<EventButton> {
 
   public render(): RenderResult | Promise<RenderResult> {
     const btn = document.createElement('button');
+    btn.classList.add('sc-child');
     btn.innerText = this.text;
     btn.disabled = this.disabled;
     btn.addEventListener('click', () => this.triggerEvent());

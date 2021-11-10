@@ -1,0 +1,19 @@
+/** cursor pointer and opacity */
+@mixin clickable {
+  cursor: pointer;
+  user-select: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+
+@mixin widget {
+  height: var(--widget-height);
+  font-family: var(--font-style);
+  font-size: 0.9rem;
+  display: inline-block;
+  position: relative;
+}

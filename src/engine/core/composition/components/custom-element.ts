@@ -1,3 +1,5 @@
+import { DebounceAction } from '/engine/helpers/debounce-action.js';
+
 import {
   getAttributeNames,
   triggerAttrChange,
@@ -9,8 +11,11 @@ import {
 
 export abstract class CustomElement<T extends CustomElement<T>> extends HTMLElement {
 
+  private readonly _debounceRender: DebounceAction;
+
   public constructor() {
     super();
+    this._debounceRender = new DebounceAction(50, () => this.triggerRender());
   }
 
   abstract render(): RenderResult | Promise<RenderResult>;
@@ -20,16 +25,17 @@ export abstract class CustomElement<T extends CustomElement<T>> extends HTMLElem
   }
 
   public attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-    console.log(`Attribute changed: ${name}`);
     if (oldValue === newValue) return;
     triggerAttrChange(this, name as AttrName<this>, oldValue, newValue);
+    this._debounceRender.invoke();
   }
 
   public connectedCallback(): void {
-    this.triggerRender();
+    this._debounceRender.invoke();
   }
 
   public async triggerRender(): Promise<void> {
+    console.log('triggerRender');
     const render = this.render();
     let result = render instanceof Promise ? await render : render;
     result = Array.isArray(result) ? result : [result];

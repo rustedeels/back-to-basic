@@ -12,7 +12,7 @@ import { renderShowcase } from './render.js';
 const showcases = new Map<string, IShowcase<any>>();
 
 /** Add a new component to showcase */
-export function buildShowcase<T extends object>(showcase: IPartialShowcase<T>, target?: Type<T>) {
+export function buildShowcase<T extends object>(showcase: IPartialShowcase<T>, target?: Type<T>, ready?: () => void) {
   const toRender = buildFromPartialShowcase(showcase, target);
 
   if (target) {
@@ -25,6 +25,10 @@ export function buildShowcase<T extends object>(showcase: IPartialShowcase<T>, t
     console.warn(`Showcase ${toRender.name} already exists`);
   }
   showcases.set(toRender.name, toRender);
+
+  if (ready) {
+    document.addEventListener('DOMContentLoaded', ready);
+  }
 }
 
 /** Render showcases in current app */

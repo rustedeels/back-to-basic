@@ -1,5 +1,7 @@
 import { buildShowcase } from '/showcase/index.js';
 
+import { appContainer } from '../core/dependency-container/index.js';
+import { EventsHandler } from '../core/events-handler/index.js';
 import { EventButton } from './event-button.js';
 
 buildShowcase<EventButton>({
@@ -11,10 +13,15 @@ buildShowcase<EventButton>({
   },
   templates: [{
     name: 'Default button',
-    htmlSrc: '<sc-event-button text="Show Alert" event="showAlertEvent" />',
+    htmlSrc: '<sc-event-button text="Show Alert" event="showAlertEventEventButton" />',
     description: 'A button that emits an event when clicked.',
   }, {
     name: 'Disabled button',
-    htmlSrc: '<sc-event-button text="Disabled text" event="showAlertEvent" disabled />',
+    htmlSrc: '<sc-event-button text="Disabled text" event="showAlertEventEventButton" disabled="true" />',
   }]
-}, EventButton);
+}, EventButton, () => {
+  appContainer
+    .resolve(EventsHandler)
+    .get('showAlertEventEventButton' as never)
+    .subscribe(() => alert('Button clicked!'));
+});

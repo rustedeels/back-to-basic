@@ -6,3 +6,13 @@
   font-family: 'Arvo';
   src: url(/fonts/Arvo-Regular.ttf) format('truetype');
 }
+
+@font-face {
+  font-family: 'Audiowide';
+  src: url(/fonts/audiowide-regular.ttf) format('truetype');
+}
+
+:root {
+  --font-read: 'Arvo';
+  --font-style: 'Audiowide';
+}

@@ -95,6 +95,7 @@ export function ensureStore<T extends object>(
   idPropOrThrows?: any | boolean,
   throws = true
 ): Store<T> | EntityStore<T, any> | undefined {
+  if (!path) { return undefined; }
 
   const shouldThrow = typeof stateOrThrows === 'boolean' ? stateOrThrows :
     (typeof idPropOrThrows === 'boolean' ? idPropOrThrows : throws);
@@ -102,6 +103,7 @@ export function ensureStore<T extends object>(
   const key = typeof idPropOrThrows !== 'boolean' ? idPropOrThrows : undefined;
 
   try {
+
     const storePath = parseStorePath(path);
     const root = appContainer.resolve<Store<T>>(Store);
 

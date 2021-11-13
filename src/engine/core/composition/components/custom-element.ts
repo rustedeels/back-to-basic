@@ -35,7 +35,6 @@ export abstract class CustomElement<T extends CustomElement<T>> extends HTMLElem
   }
 
   public async triggerRender(): Promise<void> {
-    console.log('triggerRender');
     const render = this.render();
     let result = render instanceof Promise ? await render : render;
     result = Array.isArray(result) ? result : [result];

@@ -2,7 +2,7 @@
   @include clickable;
   @include widget;
 
-  & > button {
+  & > button.#{$PRE}child {
     @include clickable;
 
     outline: none;

@@ -60,7 +60,12 @@ export function defineAttributeProperty<T>(target: Target<T>, attr: AttrName<T>,
   if (!opt) { return; }
 
   Object.defineProperty(proto, prop, {
-    get() { return opt.type(this.getAttribute(attr)); },
+    get() {
+      let attrValue = this.getAttribute(attr);
+      if (attrValue === null) { attrValue = opt.default; }
+      if (attrValue === null) { return null; }
+      return opt.type(attrValue);
+    },
     set(value) { this.setAttribute(attr, value === null ? null : String(value)); },
   });
 

@@ -1,3 +1,4 @@
+import { sleep } from '/engine/helpers/utils.js';
 import {
   Assert,
   describe,
@@ -89,9 +90,10 @@ describe('Custom Element', () => {
 
   });
 
-  it('Should be able to render', () => {
+  it('Should be able to render', async () => {
     const elem = document.createElement('test-element');
     document.body.appendChild(elem);
+    await sleep(100);
     const nodes = elem.childNodes;
     Assert.isNotEmpty(nodes);
     const node = nodes[0];

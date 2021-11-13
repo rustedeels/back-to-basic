@@ -1,0 +1,45 @@
+#{$PRE}store-input {
+  @include widget;
+
+  & > div.#{$PRE}child {
+    display: flex;
+    flex-direction: column;
+    font-size: inherit;
+    font-family: inherit;
+    height: 100%;
+    width: 100%;
+    justify-content: flex-end;
+
+    & > label.#{$PRE}child {
+      flex: 0 1 auto;
+      font-size: 0.75rem;
+    }
+
+    & > input.#{$PRE}child {
+      flex: 1 1 auto;
+      font-size: inherit;
+      font-family: inherit;
+      background-color: transparent;
+      outline: none;
+      border: none;
+      margin-left: 5px;
+
+      color: var(--text-color);
+      border-bottom: 1px solid var(--color-accent);
+
+      &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      &:focus {
+        border-bottom: 1px solid var(--color-active);
+      }
+    }
+  }
+}

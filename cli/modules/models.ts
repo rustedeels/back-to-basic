@@ -10,4 +10,5 @@ export interface ProjectInfo {
   dist: string;
   styles: string;
   public: string;
+  assets: string;
 }

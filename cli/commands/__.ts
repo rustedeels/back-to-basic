@@ -1,3 +1,4 @@
+import { AssetsCommand } from './assets.cmd.ts';
 import { CacheCommand } from './cache.cmd.ts';
 import { CliCommand } from './cli.model.ts';
 import { DevServerCommand } from './dev-server.cmd.ts';
@@ -15,4 +16,5 @@ export const CliCommandMap: CliCommand[] = [
   StaticCommand,
   ServerCommand,
   DevServerCommand,
+  AssetsCommand,
 ];

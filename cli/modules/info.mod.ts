@@ -8,6 +8,7 @@ export async function getProjectInfo(): Promise<ProjectInfo> {
   const dist = `${cwd}/dist`;
   const styles = `${cwd}/styles`;
   const publicPath = `${cwd}/public`;
+  const assets = `${cwd}/assets`;
 
   return {
     cwd,
@@ -16,5 +17,6 @@ export async function getProjectInfo(): Promise<ProjectInfo> {
     dist,
     styles,
     public: publicPath,
+    assets,
   };
 }

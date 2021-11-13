@@ -4,6 +4,7 @@ import {
 } from '../_deps.ts';
 import * as Console from '../utils/console.ts';
 import { createDebounce } from '../utils/debounce.ts';
+import { ensureAssetsSymlink } from './assets.mod.ts';
 import { copySrcToCache } from './cache.mod.ts';
 import { getProjectInfo } from './info.mod.ts';
 import { ProjectInfo } from './models.ts';
@@ -148,6 +149,9 @@ export async function startDevelopmentServer(port: number, log: boolean): Promis
 
   Console.info('Copying static files');
   await copyStaticFiles(log);
+
+  Console.info('Creating assets Symlink');
+  await ensureAssetsSymlink();
 
   try {
     const root = path.basename(info.dist);

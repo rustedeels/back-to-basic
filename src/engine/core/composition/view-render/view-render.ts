@@ -67,6 +67,9 @@ export class ViewRenderService {
       needRender = needRender || i.id === id;
     }
 
+    if (!this._renderEngine)
+      return Promise.resolve();
+
     if (needRender) {
       return this.triggerRender();
     }

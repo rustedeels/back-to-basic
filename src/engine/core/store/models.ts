@@ -69,5 +69,6 @@ export function isEntityStoreSinglePart(path: StorePart): path is EntityStoreSin
 export interface AppState {
   version: string;
   lastUpdate: string;
-  name: string;
+  appName: string;
+  developer: string;
 }

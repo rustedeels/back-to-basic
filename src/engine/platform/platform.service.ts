@@ -1,8 +1,8 @@
+import { IViewRender } from '../core/composition/index.js';
 import {
   EventsHandler,
   Inject,
   Injectable,
-  IViewRender,
   LoggerService,
 } from '../core/index.js';
 import { Subscription } from '../core/reactive/models.js';

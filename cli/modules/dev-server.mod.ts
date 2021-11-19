@@ -95,8 +95,8 @@ async function watchSourceFiles(server: Server, info: Info, log: boolean) {
       writeConsoleOutput(info, {
         ts: res.success ? undefined : `Code ${res.code}`,
       });
-      await importTests(info.dist, `${info.dist}/run-tests.js`);
-      await importShowcases(info.dist, `${info.dist}/show.js`);
+      await importTests(info.dist, `${info.dist}/entry.tests.js`);
+      await importShowcases(info.dist, `${info.dist}/entry.demo.js`);
       server.reload();
     });
   }
@@ -144,8 +144,8 @@ export async function startDevelopmentServer(port: number, log: boolean): Promis
     Console.error('Error transpiling typescript');
     return 1;
   }
-  await importTests(info.dist, `${info.dist}/run-tests.js`);
-  await importShowcases(info.dist, `${info.dist}/show.js`);
+  await importTests(info.dist, `${info.dist}/entry.tests.js`);
+  await importShowcases(info.dist, `${info.dist}/entry.demo.js`);
 
   Console.info('Copying static files');
   await copyStaticFiles(log);

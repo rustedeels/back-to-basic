@@ -81,7 +81,7 @@ export function createServer(folder: string, port: number): Server {
   });
 
   router.get('/', async (ctx) => {
-    const content = await Deno.readTextFile(`${folder}/index.html`);
+    const content = await Deno.readTextFile(`${folder}/game.html`);
     ctx.response.body = addEventSource(content);
     ctx.response.type = 'text/html';
   });
@@ -93,7 +93,7 @@ export function createServer(folder: string, port: number): Server {
   });
 
   router.get('/demo', async (ctx) => {
-    const content = await Deno.readTextFile(`${folder}/showcase.html`);
+    const content = await Deno.readTextFile(`${folder}/demo.html`);
     ctx.response.body = addEventSource(content);
     ctx.response.type = 'text/html';
   });
